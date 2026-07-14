@@ -1,22 +1,24 @@
-name: Cypress Tests
+name: Cypress 测试
+
 on: [push]
 
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
-    fail-fast: false
-    matrix:
-      containers: [1, 2]
+    strategy:
+      fail-fast: false
+      matrix:
+        containers: [1, 2]
     steps:
-      - name: Checkout
+      - name: 检出代码
         uses: actions/checkout@v6
 
-      - name: Setup Node.js
+      - name: 设置 Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install dependencies
+      - name: 安装依赖
         run: npm install wrangler cypress --save-dev
 
       - name: Cypress run
@@ -29,5 +31,7 @@ jobs:
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
 
 
