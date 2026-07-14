@@ -1,32 +1,20 @@
-name: Cypress 自动化测试
-on: [push]
+name: Deploy Cloudflare Worker
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # 支持手动一键运行
 
 jobs:
-  cypress-run:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: 检出代码
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
-      - name: 配置 Node.js 22 LTS
-        uses: actions/setup-node@v4
+      - name: 部署到 Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
         with:
-          node-version: 22
-
-      - name: 安装项目依赖
-        run: npm install wrangler cypress --save-dev
-
-      - name: 运行Cypress测试
-        uses: cypress-io/github-action@v7
-        with:
-          # 离线本地模式，不需要登录Cloudflare账号
-          start: npx wrangler dev --port 3000 --local
-          wait-on: 'http://localhost:3000'
-          wait-on-timeout: 120
-          record: true
-        env:
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
-
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: deploy index.js --name my-worker
