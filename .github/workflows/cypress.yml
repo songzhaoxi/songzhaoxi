@@ -7,19 +7,27 @@ jobs:
     fail-fast: false
     matrix:
       containers: [1, 2]
-
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install wrangler cypress --save-dev
+
       - name: Cypress run
         uses: cypress-io/github-action@v7
         with:
-          start: npm start
+          start: npx wrangler dev --port 3000
           wait-on: 'http://localhost:3000'
           record: true
           parallel: true
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
