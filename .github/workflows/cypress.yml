@@ -1,37 +1,32 @@
-name: Cypress 测试
-
+name: Cypress 自动化测试
 on: [push]
 
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        containers: [1, 2]
     steps:
       - name: 检出代码
         uses: actions/checkout@v6
 
-      - name: 设置 Node.js
+      - name: 配置 Node.js 22 LTS
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
-      - name: 安装依赖
+      - name: 安装项目依赖
         run: npm install wrangler cypress --save-dev
 
-      - name: Cypress run
+      - name: 运行Cypress测试
         uses: cypress-io/github-action@v7
         with:
-          start: npx wrangler dev --port 3000
+          # 离线本地模式，不需要登录Cloudflare账号
+          start: npx wrangler dev --port 3000 --local
           wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120
           record: true
-          parallel: true
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 
 
 
